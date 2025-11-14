@@ -52,4 +52,3 @@ npm install
 
 MIT License © 2025
 
----

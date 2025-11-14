@@ -25,7 +25,14 @@ export function useDeposit() {
 
       // Deposit into Aave
       toast('Depositing to Aave...')
-      const userAddress = await pool.signer.getAddress()
+      // get signer from browser provider to obtain user's address
+      const ethProvider = (window as Window & typeof globalThis).ethereum
+      if (!ethProvider) {
+        throw new Error('No Ethereum provider found in window.ethereum')
+      }
+      const browserProvider = new ethers.BrowserProvider(ethProvider as unknown as ethers.Eip1193Provider)
+      const signer = await browserProvider.getSigner()
+      const userAddress = await signer.getAddress()
       const depositTx = await pool.supply(
         tokenAddress,
         parsedAmount,

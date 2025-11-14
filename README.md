@@ -33,10 +33,13 @@ A decentralized application (DApp) that allows users to seamlessly deposit asset
 ```bash
 git clone https://github.com/lucidartdev/aave-yield-dapp.git
 cd aave-yield-dapp
+```
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-
-
-📚 How It Works
+### 📚 How It Works
 
 - User connects wallet
 - Reserves + APY are fetched from Aave
@@ -44,3 +47,9 @@ cd aave-yield-dapp
 - Approves ERC20
 - Deposits through Aave Pool contract
 - Dashboard updates balance and APY
+
+### 📄 License
+
+MIT License © 2025
+
+---

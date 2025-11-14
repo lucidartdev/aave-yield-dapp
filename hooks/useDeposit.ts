@@ -25,10 +25,11 @@ export function useDeposit() {
 
       // Deposit into Aave
       toast('Depositing to Aave...')
+      const userAddress = await pool.signer.getAddress()
       const depositTx = await pool.supply(
         tokenAddress,
         parsedAmount,
-        await pool.signer.getAddress(),
+        userAddress,
         0
       )
       await depositTx.wait()

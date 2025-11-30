@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { ethers } from 'ethers'
-import { getERC20, getLendingPool } from '@/lib/contract'
+import { getERC20Contract, getLendingPoolContract, getSigner } from '@/lib/contract' // Updated imports
 
 export function useDeposit() {
   const [loading, setLoading] = useState(false)
@@ -11,28 +11,27 @@ export function useDeposit() {
   const deposit = async (tokenAddress: string, amount: string) => {
     try {
       setLoading(true)
-      const erc20 = await getERC20(tokenAddress)
-      const pool = await getLendingPool()
+      
+      const erc20 = await getERC20Contract(tokenAddress) // Renamed helper
+      const pool = await getLendingPoolContract() // Renamed helper
+      const signer = await getSigner() // Use unified signer fetcher
+      const userAddress = await signer.getAddress() // Get address from unified signer
+
       const parsedAmount = ethers.parseUnits(amount, 18)
 
-      // Approve Aave pool to spend tokens
-      toast('Approving token...')
+      // 1. Approve Aave pool to spend tokens
+      toast('Approving token...', { id: 'deposit-toast' })
       const approveTx = await erc20.approve(
         await pool.getAddress(),
         parsedAmount
       )
       await approveTx.wait()
+      toast.success('Approval successful!', { id: 'deposit-toast' })
 
-      // Deposit into Aave
-      toast('Depositing to Aave...')
-      // get signer from browser provider to obtain user's address
-      const ethProvider = (window as Window & typeof globalThis).ethereum
-      if (!ethProvider) {
-        throw new Error('No Ethereum provider found in window.ethereum')
-      }
-      const browserProvider = new ethers.BrowserProvider(ethProvider as unknown as ethers.Eip1193Provider)
-      const signer = await browserProvider.getSigner()
-      const userAddress = await signer.getAddress()
+
+      // 2. Deposit into Aave
+      toast('Depositing to Aave...', { id: 'deposit-toast' })
+      
       const depositTx = await pool.supply(
         tokenAddress,
         parsedAmount,
@@ -41,7 +40,7 @@ export function useDeposit() {
       )
       await depositTx.wait()
 
-      toast.success('Deposit successful ✅')
+      toast.success('Deposit successful ✅', { id: 'deposit-toast' })
     } catch (err) {
       console.error(err)
       toast.error('Transaction failed')

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { ethers } from 'ethers'
-import { getLendingPool } from '@/lib/contract'
+import { getLendingPoolContract, getSigner } from '@/lib/contract' // Updated imports
 
 export function useWithdraw() {
   const [loading, setLoading] = useState(false)
@@ -13,9 +13,9 @@ export function useWithdraw() {
       setLoading(true)
       toast('Processing withdrawal...')
 
-      const pool = await getLendingPool()
-      const signer = await pool.signer
-      const userAddress = await signer.getAddress()
+      const pool = await getLendingPoolContract() // Renamed helper
+      const signer = await getSigner() // Use unified signer fetcher
+      const userAddress = await signer.getAddress() // Get address from unified signer
 
       const parsedAmount = ethers.parseUnits(amount, 18)
 
